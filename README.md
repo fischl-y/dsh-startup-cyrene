@@ -30,7 +30,13 @@ dsh plugin --profile desktop add git+ssh://git@github.com/<user>/dsh-startup-cyr
 dsh plugin --profile desktop add https://codeload.github.com/<user>/dsh-startup-cyrene/tar.gz/<sha>
 ```
 
-Restart the client afterwards. Remove it with `dsh plugin --profile desktop remove dsh-startup-cyrene`.
+Restart the client afterwards — that is all; no further command is needed.
+
+If you later want to **remove** the plugin (optional), quit the client first and run:
+
+```bash
+dsh plugin --profile desktop remove dsh-startup-cyrene
+```
 
 ## Configuration
 

@@ -28,7 +28,13 @@ dsh plugin --profile desktop add git+ssh://git@github.com/<user>/dsh-startup-cyr
 dsh plugin --profile desktop add https://codeload.github.com/<user>/dsh-startup-cyrene/tar.gz/<sha>
 ```
 
-装完重启客户端。卸载：`dsh plugin --profile desktop remove dsh-startup-cyrene`。
+装完**重启客户端**即可生效——这一步不需要再跑任何命令。
+
+日后如果想**移除本插件**（不是必须的），先退出客户端，再：
+
+```bash
+dsh plugin --profile desktop remove dsh-startup-cyrene
+```
 
 ## 配置
 
