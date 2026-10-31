@@ -1,0 +1,45 @@
+{
+  "name": "dsh-startup-cyrene",
+  "version": "0.2.6",
+  "private": false,
+  "type": "module",
+  "description": "Cyrene-style startup splash for DeepSeek Harness: plays a configurable list of local video segments at boot, lets a click jump ahead, then fades into the workbench. Ships with the two-segment Cyrene opening (loading.mp4 + 222_1.mp4).",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "startup",
+    "splash",
+    "intro",
+    "video",
+    "cyrene"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./client.js"
+  },
+  "files": [
+    "lib",
+    "client.js",
+    "assets",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh-CN.md",
+    "PROVENANCE.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/splash-script.test.mjs && node test/plugin-apply.test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  }
+}
