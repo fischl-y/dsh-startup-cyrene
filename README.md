@@ -1,46 +1,57 @@
 # dsh-startup-cyrene
 
-A configurable Cyrene-style startup splash for [DeepSeek Harness](https://github.com/deepseek-ai): plays an
-ordered list of local video segments at boot, lets a click jump ahead, then fades into the workbench.
+A configurable **startup splash** for [DeepSeek Harness](https://github.com/deepseek-ai): at boot it plays one or
+more local video segments full-screen, then fades into the workbench. Two Cyrene opening clips ship with it
+(13.9 s + ~3 s).
 
-- **Multi-segment** — two clips by default (`loading.mp4`, 13.9 s → `222_1.mp4`, ~3 s); 1–5 configurable.
-- **Click to skip ahead** — clicking during an early segment jumps straight to the configured target;
-  clicks on the last segment are ignored.
-- **Audio** — each segment fades out over its last 2.2 s; blocked autoplay falls back to muted playback
-  instead of a frozen screen.
-- **Fail-safes** — a 2.6 s start guard per segment and a global 60 s hard release.
-- **Host-only** — one injected script plus a Range-capable media route; no client build step.
+- **Multi-segment** — 1–5 clips, played in the configured order
+- **Click to jump** — clicking during playback jumps straight to a chosen segment
+- **Audio** — each segment fades out at its tail; blocked autoplay falls back to muted playback
+- **Fail-safes** — a 2.6 s start guard per segment plus a 60 s global release; nothing can lock the UI
+- **Config re-read** — edits apply on the next client restart, no reinstall needed
+
+---
 
 ## Install
 
-Quit DeepSeek Harness **completely** first (the desktop app composes its plugin tree at boot; installing while
-it runs can fail with `EPERM` on the plugin directory).
+> **Quit the client completely first** (tray → exit, or end `DeepSeek Harness.exe`).
+> Installing while it runs fails with `EPERM` and can wipe the package's `assets/`.
 
-```bash
-# local directory
-dsh plugin --profile desktop add <absolute path to this repo>
+**Option 1 — one-click script (recommended)**
 
-# local tarball
-dsh plugin --profile desktop add file:<...>/dsh-startup-cyrene-0.1.0.tgz
-
-# GitHub over SSH
-dsh plugin --profile desktop add git+ssh://git@github.com/<user>/dsh-startup-cyrene.git
-
-# GitHub when git over HTTPS is blocked (codeload tarball)
-dsh plugin --profile desktop add https://codeload.github.com/<user>/dsh-startup-cyrene/tar.gz/<sha>
+```powershell
+# run from the repository root; it checks the client is closed, locates dsh, then installs
+powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Restart the client afterwards — that is all; no further command is needed.
+`-DryRun` prints without executing; `-Uninstall` removes the plugin.
 
-If you later want to **remove** the plugin (optional), quit the client first and run:
+**Option 2 — install from the repository**
 
-```bash
-dsh plugin --profile desktop remove dsh-startup-cyrene
+```powershell
+dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git"
 ```
+
+**Option 3 — local tarball**
+
+```powershell
+# the tarball lives in release/
+dsh plugin --profile desktop add "file:D:\path\to\dsh-startup-cyrene-0.2.6.tgz"
+```
+
+**Restart the client afterwards — that is all; no further command is needed.**
+
+Optional integrity check:
+
+```powershell
+Get-FileHash .\release\dsh-startup-cyrene-0.2.6.tgz -Algorithm SHA256
+```
+
+(To remove later: quit the client, then `dsh plugin --profile desktop remove dsh-startup-cyrene`.)
 
 ## Configuration
 
-`~/.dsh/startup-cyrene.json` (built-in defaults apply when the file is missing):
+No configuration is required. To tune the splash, write `%USERPROFILE%\.dsh\startup-cyrene.json`:
 
 ```json
 {
@@ -59,41 +70,74 @@ dsh plugin --profile desktop remove dsh-startup-cyrene
 
 | Field | Meaning |
 | --- | --- |
-| `enabled` | `false` disables the splash entirely. |
-| `fadeMs` | Overlay fade-out duration. |
-| `audioFadeMs` | Per-segment audio fade length; `0` disables it. |
-| `guardMs` | Per-segment start guard before the segment counts as undecodable. |
-| `totalTimeoutMs` | Global hard release, no matter which segment stalls. |
-| `clickSkipsTo` | Segment index a click jumps to (0-based); `null` disables click. |
-| `segments[].file` | Must be an existing file in the package `assets/` (allow-list, blocks path traversal). |
-| `segments[].volume` | 0–1. |
+| `enabled` | `false` disables the splash entirely |
+| `fadeMs` | Overlay fade-out duration (ms) |
+| `audioFadeMs` | Per-segment audio fade cap; the effective value is `min(this, duration × 0.3)`; `0` disables |
+| `guardMs` | Per-segment start guard: if playback has not started by then, the segment counts as undecodable |
+| `totalTimeoutMs` | Global hard release, no matter which segment stalls |
+| `clickSkipsTo` | Segment index a click jumps to (0-based); `null` disables clicking |
+| `segments[].file` | File name inside the package `assets/` (allow-listed, blocks path traversal) |
+| `segments[].volume` | 0–1 |
 
-Invalid values fall back to defaults with a `console.warn`; the splash never blocks the UI.
-`DSH_STARTUP_CYRENE_CONFIG` can point at an alternative JSON file (handy for testing).
+Invalid values fall back to defaults with a console warning — the splash never blocks the UI.
+`DSH_STARTUP_CYRENE_CONFIG` can point at an alternative JSON file.
+
+### Use your own video
+
+```powershell
+# overwrite in place, keeping the same file name
+copy your-opening.mp4 "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-startup-cyrene\assets\clip1.mp4"
+```
+
+Or point `segments[].file` at another file inside `assets/`. H.264 + AAC mp4 is the safest choice.
 
 ## Interaction with other plugins
 
-> **Better together with the balance widget (with one caveat).** This plugin only owns the *picture*; there is
-> no audio at the end. The greeting line ("嗨，看见你在，真是令人开心") belongs to `dsh-cyrene-whale-widget`:
->
-> - **Animated build** `dsh-cyrene-whale-widget`: already waits for a splash to finish before greeting — but it
->   ships its own splash, so it cannot coexist with this plugin;
-> - **No-animation build** `dsh-cyrene-whale-widget-noanim` (upstream as-is): has **no** waiting logic and
->   greets ~0.7 s after page load, which may overlap this splash. Only a build carrying the `cyrene.1` patch
->   (detects `#cyrene-loading`, waits for `cyrene-loading-done`) defers the greeting until the splash ends —
->   the patch lives in [`widget-patch/`](widget-patch/README.md) and can be applied with one command.
->
-> Without the widget everything still works — you just miss that sentence.
+**Better together with the balance widget (with one caveat)** — this plugin owns the *picture* only; the
+greeting line belongs to `dsh-cyrene-whale-widget`:
 
-- Compatibility contract: the overlay id is `#cyrene-loading`; on finish this plugin dispatches
-  `cyrene-loading-done` (plus `dsh-startup-cyrene-done`) and sets `window.__cyreneLoadingDone`. Those names
-  follow the convention of the upstream animated widget so that a cooperating widget can defer its greeting.
-  This plugin ships no widget code and calls none of it.
+- **Animated build**: already waits for the splash before greeting, but it ships its own splash and cannot
+  coexist with this plugin;
+- **No-animation build (upstream as-is)**: has **no** waiting logic and greets ~0.7 s after load, which may
+  overlap this splash;
+- **No-animation build + [`widget-patch/`](widget-patch/README.md)**: recognises the splash and defers the
+  greeting — one command to apply.
 
-**Only one splash source may be enabled per machine** — this plugin, the animated `dsh-cyrene-whale-widget`,
-and `dsh-startup-intro` all mount a full-screen overlay, and enabling two of them stacks two overlays.
+The overlay id is `#cyrene-loading`; on finish this plugin dispatches `cyrene-loading-done` (plus
+`dsh-startup-cyrene-done`) and sets `window.__cyreneLoadingDone`. Those names follow the upstream animated
+widget's convention so a cooperating widget can defer its greeting. This plugin ships no widget code and calls
+none of it.
 
-## Media
+⚠️ **Only one splash source may be enabled per machine** — this plugin, the animated
+`dsh-cyrene-whale-widget`, and `dsh-startup-intro` all mount a full-screen overlay; enabling two stacks two.
 
-`assets/clip1.mp4` comes from the upstream `dsh-cyrene-whale-widget` (MIT) 2.0 opening; `assets/clip2.mp4` is
-user-provided (`222_1.mp4`). Confirm redistribution rights before publishing.
+## Troubleshooting
+
+| Symptom | Cause / fix |
+| --- | --- |
+| `EPERM ... rename` during install | The client is still running — quit it completely and retry |
+| Installed but no splash | Another splash plugin may own the overlay; check the client supports client plugins + index injection |
+| Picture but no greeting | The greeting belongs to the balance widget and uses its own `Audio`; autoplay policy may block it (a click usually lets it play) |
+| Window buttons drawn over the splash | That is Electron's native `titleBarOverlay`; DOM cannot cover it — platform limitation |
+
+## Development
+
+```bash
+node test/splash-script.test.mjs   # client script state machine (7 cases)
+node test/plugin-apply.test.mjs    # host half registration + injection (16 assertions)
+```
+
+How it works: the host half (`lib/`) reads config, serves Range-capable media routes, and injects the splash
+script through the host's **structured index injection rows** (`webserver/index-inject`); the client half
+(`client.js`) registers `shell.overlay` as a fallback. The two paths are mutually exclusive via
+`window.__dshStartupCyrene`, so the overlay never mounts twice.
+
+## License and media
+
+- **Code** (`lib/`, `client.js`, config, scripts): MIT — see [LICENSE](LICENSE).
+- **Video media** (`assets/*.mp4`): not covered by MIT, distributed as-is; replace freely — see
+  [PROVENANCE.md](PROVENANCE.md).
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).

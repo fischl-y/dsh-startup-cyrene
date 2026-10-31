@@ -1,8 +1,15 @@
 # 变更记录
 
-> 已弃用版本的 tgz 以清理掉了，但决定性的源码（`client.js` / `config.js` / `script.js`）留在
-> `archive/0.2.4/` 与 `archive/0.2.5/`，想看当时的实现不用重打整包。
-> 当前可安装包只有 `dist/dsh-startup-cyrene-0.2.3.tgz`。
+> 当前可安装包在 `release/`：`dsh-startup-cyrene-0.2.6.tgz`（开屏插件）与
+> `dsh-cyrene-whale-widget-noanim-2.0.0+cyrene.1.tgz`（配合用的挂件整包）。
+> 已弃用版本的源码不再随仓库保留，原因与结论都记在下面，需要复现可照条目重写。
+
+## 仓库整理（文档，不影响版本号）
+
+- 移除 `archive/`（0.2.4 / 0.2.5 的实验源码）与本地 `dist/`，仓库只留可发布内容。
+- 重写 `README.md` / `README.zh-CN.md`：安装方式以一键脚本优先、配置表补全、常见问题独立成节、
+  兼容说明（`cyrene-loading` 约定）与实际行为对齐。
+- `安装说明.md` 收敛为「快速上手」单页，详细内容指向 README，避免多份文档互相漂移。
 
 ## 0.2.5 —— 已弃用（观感被否决）
 
