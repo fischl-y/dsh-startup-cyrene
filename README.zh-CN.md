@@ -71,6 +71,15 @@ dsh plugin --profile desktop remove dsh-startup-cyrene
 
 ## 与其它插件的关系
 
+> **搭配余额挂件使用效果更好。** 本插件只负责「开屏画面」，片尾没有声音。
+> 那句「嗨，看见你在，真是令人开心」的问候语音属于余额挂件
+> `dsh-cyrene-whale-widget`（建议用免动画版 `dsh-cyrene-whale-widget-noanim`）：
+> 它检测到 `#cyrene-loading` 后会等开屏结束，再在 2.5 秒后播放问候。
+> 没装挂件也能正常用，只是少这一句问候。
+>
+> ⚠️ 注意：问候语音走独立的 `Audio` 元素，部分环境下会被浏览器的自动播放策略静默拦下
+> （点一下画面通常能让它补播）。若听到的是「只有画面没有问候」，那是这条策略，不是开屏没播。
+
 - 遮罩 id 是 `#cyrene-loading`，结束时会派发 `cyrene-loading-done`（以及 `dsh-startup-cyrene-done`）并设置
   `window.__cyreneLoadingDone`。`dsh-cyrene-whale-widget`（免动画版）认这个事件，会把问候语音推迟到开屏之后再播。
 - 同一台机器上**只能有一个开屏来源**：本插件与带动画版 `dsh-cyrene-whale-widget`、`dsh-startup-intro`
