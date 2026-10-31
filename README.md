@@ -80,7 +80,8 @@ Invalid values fall back to defaults with a `console.warn`; the splash never blo
 >   ships its own splash, so it cannot coexist with this plugin;
 > - **No-animation build** `dsh-cyrene-whale-widget-noanim` (upstream as-is): has **no** waiting logic and
 >   greets ~0.7 s after page load, which may overlap this splash. Only a build carrying the `cyrene.1` patch
->   (detects `#cyrene-loading`, waits for `cyrene-loading-done`) defers the greeting until the splash ends.
+>   (detects `#cyrene-loading`, waits for `cyrene-loading-done`) defers the greeting until the splash ends —
+>   the patch lives in [`widget-patch/`](widget-patch/README.md) and can be applied with one command.
 >
 > Without the widget everything still works — you just miss that sentence.
 

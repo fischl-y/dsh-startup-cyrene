@@ -77,7 +77,7 @@ dsh plugin --profile desktop remove dsh-startup-cyrene
 > - **带动画版** `dsh-cyrene-whale-widget`：原生就会等开屏结束再问好——但它本身也带开屏，不能与本插件共存；
 > - **免动画版** `dsh-cyrene-whale-widget-noanim`（上游原版）：**没有**等待逻辑，会在页面加载约 0.7 秒后
 >   直接问候，可能与本开屏重叠。只有打了 `cyrene.1` 补丁的那份（识别 `#cyrene-loading` 并等
->   `cyrene-loading-done`）才会把问候推迟到开屏之后。
+>   `cyrene-loading-done`）才会把问候推迟到开屏之后——补丁在 [`widget-patch/`](widget-patch/README.md)，可一键应用。
 >
 > 没装挂件也能正常用，只是少这一句问候。
 
