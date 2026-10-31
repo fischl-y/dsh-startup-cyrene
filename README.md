@@ -73,19 +73,21 @@ Invalid values fall back to defaults with a `console.warn`; the splash never blo
 
 ## Interaction with other plugins
 
-> **Better together with the balance widget.** This plugin only owns the *picture*; there is no audio at the end.
-> The greeting line ("嗨，看见你在，真是令人开心") belongs to the balance widget `dsh-cyrene-whale-widget`
-> (use the no-animation build `dsh-cyrene-whale-widget-noanim`): it detects `#cyrene-loading`, waits for the
-> splash to finish, then plays the greeting 2.5 s later. Without the widget everything still works — you just
-> miss that one sentence.
+> **Better together with the balance widget (with one caveat).** This plugin only owns the *picture*; there is
+> no audio at the end. The greeting line ("嗨，看见你在，真是令人开心") belongs to `dsh-cyrene-whale-widget`:
 >
-> ⚠️ The greeting uses its own `Audio` element, which some environments silently block under the browser's
-> autoplay policy (a click on the page usually lets it play). "Picture but no greeting" is that policy, not a
-> broken splash.
+> - **Animated build** `dsh-cyrene-whale-widget`: already waits for a splash to finish before greeting — but it
+>   ships its own splash, so it cannot coexist with this plugin;
+> - **No-animation build** `dsh-cyrene-whale-widget-noanim` (upstream as-is): has **no** waiting logic and
+>   greets ~0.7 s after page load, which may overlap this splash. Only a build carrying the `cyrene.1` patch
+>   (detects `#cyrene-loading`, waits for `cyrene-loading-done`) defers the greeting until the splash ends.
+>
+> Without the widget everything still works — you just miss that sentence.
 
-The overlay uses `#cyrene-loading` and dispatches `cyrene-loading-done` (plus `dsh-startup-cyrene-done`) while
-setting `window.__cyreneLoadingDone`, so `dsh-cyrene-whale-widget` (no-animation build) waits for the splash
-before playing its greeting.
+- Compatibility contract: the overlay id is `#cyrene-loading`; on finish this plugin dispatches
+  `cyrene-loading-done` (plus `dsh-startup-cyrene-done`) and sets `window.__cyreneLoadingDone`. Those names
+  follow the convention of the upstream animated widget so that a cooperating widget can defer its greeting.
+  This plugin ships no widget code and calls none of it.
 
 **Only one splash source may be enabled per machine** — this plugin, the animated `dsh-cyrene-whale-widget`,
 and `dsh-startup-intro` all mount a full-screen overlay, and enabling two of them stacks two overlays.

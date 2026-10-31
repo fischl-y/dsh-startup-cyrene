@@ -71,17 +71,19 @@ dsh plugin --profile desktop remove dsh-startup-cyrene
 
 ## 与其它插件的关系
 
-> **搭配余额挂件使用效果更好。** 本插件只负责「开屏画面」，片尾没有声音。
-> 那句「嗨，看见你在，真是令人开心」的问候语音属于余额挂件
-> `dsh-cyrene-whale-widget`（建议用免动画版 `dsh-cyrene-whale-widget-noanim`）：
-> 它检测到 `#cyrene-loading` 后会等开屏结束，再在 2.5 秒后播放问候。
-> 没装挂件也能正常用，只是少这一句问候。
+> **搭配余额挂件使用效果更好（但有前提）。** 本插件只负责「开屏画面」，片尾没有声音。
+> 那句「嗨，看见你在，真是令人开心」的问候语音属于余额挂件 `dsh-cyrene-whale-widget`：
 >
-> ⚠️ 注意：问候语音走独立的 `Audio` 元素，部分环境下会被浏览器的自动播放策略静默拦下
-> （点一下画面通常能让它补播）。若听到的是「只有画面没有问候」，那是这条策略，不是开屏没播。
+> - **带动画版** `dsh-cyrene-whale-widget`：原生就会等开屏结束再问好——但它本身也带开屏，不能与本插件共存；
+> - **免动画版** `dsh-cyrene-whale-widget-noanim`（上游原版）：**没有**等待逻辑，会在页面加载约 0.7 秒后
+>   直接问候，可能与本开屏重叠。只有打了 `cyrene.1` 补丁的那份（识别 `#cyrene-loading` 并等
+>   `cyrene-loading-done`）才会把问候推迟到开屏之后。
+>
+> 没装挂件也能正常用，只是少这一句问候。
 
-- 遮罩 id 是 `#cyrene-loading`，结束时会派发 `cyrene-loading-done`（以及 `dsh-startup-cyrene-done`）并设置
-  `window.__cyreneLoadingDone`。`dsh-cyrene-whale-widget`（免动画版）认这个事件，会把问候语音推迟到开屏之后再播。
+- 兼容契约：本插件的遮罩 id 是 `#cyrene-loading`，结束时派发 `cyrene-loading-done`（以及
+  `dsh-startup-cyrene-done`）并设置 `window.__cyreneLoadingDone`。这些名字沿用上游带动画版挂件的约定，
+  目的是让「愿意配合的挂件」能把问候延后——本插件不包含、也不调用挂件的任何代码。
 - 同一台机器上**只能有一个开屏来源**：本插件与带动画版 `dsh-cyrene-whale-widget`、`dsh-startup-intro`
   同时启用会叠出两层遮罩。装本插件前请先关掉/卸载另外两个。
 
