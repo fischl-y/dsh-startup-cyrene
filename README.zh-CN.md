@@ -23,13 +23,16 @@
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-`-DryRun` 只打印不执行，`-Uninstall` 卸载。
+`-DryRun` 只打印不执行，`-Uninstall` 卸载，`-Ref main` 可跟随最新提交（默认钉在 `v0.2.6`）。
 
-**方式二：直接从仓库安装**
+**方式二：直接从仓库安装（钉在 tag 上）**
 
 ```powershell
-dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git"
+dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.6"
 ```
+
+`#v0.2.6` 是**版本锚点**：装上的一定是打这个 tag 的那份代码，不会随仓库后续提交漂移。
+想升级就换 tag（如 `#v0.2.7`），想跟着 `main` 走可以去掉 `#` 后面那段（不推荐用于分享）。
 
 **方式三：本地 tgz**
 
@@ -124,6 +127,20 @@ node test/plugin-apply.test.mjs    # 宿主半注册与注入（16 项断言）
 实现要点：宿主半（`lib/`）负责读配置、提供带 Range 的媒体路由，并通过宿主的**结构化首屏注入行**
 （`webserver/index-inject`）把脚本写进窗口 HTML；客户端半（`client.js`）注册 `shell.overlay` 作为后备。
 两条路径用 `window.__dshStartupCyrene` 互斥，不会叠两层。
+
+## 版本与锚点
+
+每次发布都会打一个 `vX.Y.Z` tag，`package.json` 的 `version` 与 tag 保持一致。
+
+| 安装方式 | 锚点 | 可复现 |
+| --- | --- | --- |
+| `git+…git#v0.2.6` | git tag | ✅ 拿到的一定是该 tag 的代码 |
+| `file:…dsh-startup-cyrene-0.2.6.tgz` | 文件内容（可用 SHA256 校验） | ✅ |
+| `git+…git`（无 `#`） | 仓库 HEAD，浮动 | ❌ 不同时间装到不同内容 |
+| 本地目录 | 你的工作区 | ❌ |
+
+升级：把命令里的 tag 换成新的（如 `#v0.2.7`）重新 `add` 即可；降级同理。
+`pnpm-lock.yaml` 会记住实际解析到的 commit，`dsh plugin install` 会按它还原。
 
 ## 许可与素材
 

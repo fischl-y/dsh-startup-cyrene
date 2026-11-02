@@ -24,13 +24,18 @@ more local video segments full-screen, then fades into the workbench. Two Cyrene
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-`-DryRun` prints without executing; `-Uninstall` removes the plugin.
+`-DryRun` prints without executing; `-Uninstall` removes the plugin; `-Ref main` follows the newest commit
+(the default is pinned to `v0.2.6`).
 
-**Option 2 — install from the repository**
+**Option 2 — install from the repository (pinned to a tag)**
 
 ```powershell
-dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git"
+dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.6"
 ```
+
+`#v0.2.6` is the **version anchor**: you get exactly the code tagged `v0.2.6`, and later commits cannot
+silently change it. Upgrade by switching the tag (e.g. `#v0.2.7`); drop the `#…` part to track `main`
+(not recommended for sharing).
 
 **Option 3 — local tarball**
 
@@ -131,6 +136,20 @@ How it works: the host half (`lib/`) reads config, serves Range-capable media ro
 script through the host's **structured index injection rows** (`webserver/index-inject`); the client half
 (`client.js`) registers `shell.overlay` as a fallback. The two paths are mutually exclusive via
 `window.__dshStartupCyrene`, so the overlay never mounts twice.
+
+## Versioning and anchors
+
+Every release gets a `vX.Y.Z` tag, kept in sync with `package.json`'s `version`.
+
+| Install method | Anchor | Reproducible |
+| --- | --- | --- |
+| `git+…git#v0.2.6` | git tag | ✅ always the tagged code |
+| `file:…dsh-startup-cyrene-0.2.6.tgz` | file contents (verify with SHA256) | ✅ |
+| `git+…git` (no `#`) | repository HEAD, floating | ❌ different bytes at different times |
+| local directory | your working tree | ❌ |
+
+To upgrade, swap the tag in the command (e.g. `#v0.2.7`) and `add` again; downgrading works the same way.
+`pnpm-lock.yaml` records the commit actually resolved, and `dsh plugin install` restores exactly that.
 
 ## License and media
 
