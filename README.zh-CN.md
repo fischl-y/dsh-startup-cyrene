@@ -28,7 +28,11 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 **方式二：直接从仓库安装（钉在 tag 上）**
 
 ```powershell
+# 主仓库（Gitee，国内访问快）
 dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.6"
+
+# 镜像（GitHub，能连 GitHub 时可用）
+dsh plugin --profile desktop add "git+https://github.com/fischl-y/dsh-startup-cyrene.git#v0.2.6"
 ```
 
 `#v0.2.6` 是**版本锚点**：装上的一定是打这个 tag 的那份代码，不会随仓库后续提交漂移。
@@ -141,6 +145,20 @@ node test/plugin-apply.test.mjs    # 宿主半注册与注入（16 项断言）
 
 升级：把命令里的 tag 换成新的（如 `#v0.2.7`）重新 `add` 即可；降级同理。
 `pnpm-lock.yaml` 会记住实际解析到的 commit，`dsh plugin install` 会按它还原。
+
+## 仓库镜像
+
+| 远端 | 地址 | 备注 |
+| --- | --- | --- |
+| `origin`（主） | `https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene` | 国内访问快，默认推送目标 |
+| `github`（镜像） | `https://github.com/fischl-y/dsh-startup-cyrene` | 需要能访问 GitHub |
+
+两边内容保持一致（同一批 commit、同一个 `v0.2.6` tag）。维护者同步一次的命令：
+
+```bash
+git push origin main --follow-tags
+git push github main --follow-tags
+```
 
 ## 许可与素材
 

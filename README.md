@@ -30,7 +30,11 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 **Option 2 — install from the repository (pinned to a tag)**
 
 ```powershell
+# primary (Gitee, fastest from mainland China)
 dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.6"
+
+# mirror (GitHub, when GitHub is reachable)
+dsh plugin --profile desktop add "git+https://github.com/fischl-y/dsh-startup-cyrene.git#v0.2.6"
 ```
 
 `#v0.2.6` is the **version anchor**: you get exactly the code tagged `v0.2.6`, and later commits cannot
@@ -150,6 +154,20 @@ Every release gets a `vX.Y.Z` tag, kept in sync with `package.json`'s `version`.
 
 To upgrade, swap the tag in the command (e.g. `#v0.2.7`) and `add` again; downgrading works the same way.
 `pnpm-lock.yaml` records the commit actually resolved, and `dsh plugin install` restores exactly that.
+
+## Repository mirrors
+
+| Remote | URL | Notes |
+| --- | --- | --- |
+| `origin` (primary) | `https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene` | fast from mainland China; default push target |
+| `github` (mirror) | `https://github.com/fischl-y/dsh-startup-cyrene` | requires GitHub reachability |
+
+Both carry the same commits and the same `v0.2.6` tag. Maintainer sync:
+
+```bash
+git push origin main --follow-tags
+git push github main --follow-tags
+```
 
 ## License and media
 

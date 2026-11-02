@@ -4,6 +4,12 @@
 > `dsh-cyrene-whale-widget-noanim-2.0.0+cyrene.1.tgz`（配合用的挂件整包）。
 > 已弃用版本的源码不再随仓库保留，原因与结论都记在下面，需要复现可照条目重写。
 
+## 镜像（文档）
+
+- 新增 GitHub 镜像 `github.com/fischl-y/dsh-startup-cyrene`，与 Gitee 主仓库内容一致（同一批 commit 与 `v0.2.6` tag）。
+- README（中英）与 `安装说明.md` 补上镜像安装命令；README 新增「仓库镜像」一节，写明两个远端与同步命令。
+- 本地仓库新增 `github` 远端；`main` 的 upstream 仍是 `origin/main`（默认推送目标仍是 Gitee）。
+
 ## 版本锚点（文档 + 脚本）
 
 - 每次发布打 `vX.Y.Z` tag，与 `package.json` 的 `version` 一致；首个 tag 为 `v0.2.6`。
