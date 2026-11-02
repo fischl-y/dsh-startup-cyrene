@@ -25,26 +25,26 @@
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-`-DryRun` 只打印不执行，`-Uninstall` 卸载，`-Ref main` 可跟随最新提交（默认钉在 `v0.2.6`）。
+`-DryRun` 只打印不执行，`-Uninstall` 卸载，`-Ref main` 可跟随最新提交（默认钉在 `v0.2.7`）。
 
 **方式二：直接从仓库安装（钉在 tag 上）**
 
 ```powershell
 # 主仓库（Gitee，国内访问快）
-dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.6"
+dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.7"
 
 # 镜像（GitHub，能连 GitHub 时可用）
-dsh plugin --profile desktop add "git+https://github.com/fischl-y/dsh-startup-cyrene.git#v0.2.6"
+dsh plugin --profile desktop add "git+https://github.com/fischl-y/dsh-startup-cyrene.git#v0.2.7"
 ```
 
-`#v0.2.6` 是**版本锚点**：装上的一定是打这个 tag 的那份代码，不会随仓库后续提交漂移。
+`#v0.2.7` 是**版本锚点**：装上的一定是打这个 tag 的那份代码，不会随仓库后续提交漂移。
 想升级就换 tag（如 `#v0.2.7`），想跟着 `main` 走可以去掉 `#` 后面那段（不推荐用于分享）。
 
 **方式三：本地 tgz**
 
 ```powershell
 # tgz 在 release/ 目录下；路径按实际位置改
-dsh plugin --profile desktop add "file:D:\你的目录\dsh-startup-cyrene-0.2.6.tgz"
+dsh plugin --profile desktop add "file:D:\你的目录\dsh-startup-cyrene-0.2.7.tgz"
 ```
 
 **装完重启客户端即可生效，不需要再执行任何命令。**
@@ -52,7 +52,7 @@ dsh plugin --profile desktop add "file:D:\你的目录\dsh-startup-cyrene-0.2.6.
 可选校验：
 
 ```powershell
-Get-FileHash .\release\dsh-startup-cyrene-0.2.6.tgz -Algorithm SHA256
+Get-FileHash .\release\dsh-startup-cyrene-0.2.7.tgz -Algorithm SHA256
 ```
 
 （卸载：先退出客户端，再 `dsh plugin --profile desktop remove dsh-startup-cyrene`。）
@@ -89,14 +89,29 @@ Get-FileHash .\release\dsh-startup-cyrene-0.2.6.tgz -Algorithm SHA256
 
 写错只会回退默认值并在控制台留一条警告，不会白屏。`DSH_STARTUP_CYRENE_CONFIG` 可指向另一份 JSON。
 
-### 换成自己的视频
+### 换成自己的视频（推荐用脚本）
+
+视频放在 **`%USERPROFILE%\.dsh\startup-cyrene-media\`**，插件优先读这里，其次才读包内 `assets/`。
+所以素材不会被插件更新覆盖。
 
 ```powershell
-# 同名覆盖（保持文件名不变最省事）
-copy your-opening.mp4 "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-startup-cyrene\assets\clip1.mp4"
+# 只换第一段（第二段保持不动）
+powershell -ExecutionPolicy Bypass -File .\set-videos.ps1 -Clip1 .\我的开场.mp4
+
+# 两段都换
+powershell -ExecutionPolicy Bypass -File .\set-videos.ps1 -Clip1 .\我的开场.mp4 -Clip2 .\我的第二段.mp4
 ```
 
-也可以改配置里的 `segments[].file` 指向 `assets/` 下的其他文件名。建议 H.264 + AAC 的 mp4。
+脚本会复制文件到素材目录、把 `~/.dsh/startup-cyrene.json` 的 `segments` 指过去（其它配置保留），
+然后你只需重启客户端。`-DryRun` 可以只看不动。
+
+手动方式（等价）：把文件放进 `startup-cyrene-media`，再在配置里写：
+
+```json
+{ "segments": [ { "file": "我的开场.mp4" }, { "file": "我的第二段.mp4" } ] }
+```
+
+建议 H.264 + AAC 的 mp4。想还原内置素材：删掉配置文件与 `startup-cyrene-media` 目录即可。
 
 ## 与其它插件的关系
 
@@ -140,8 +155,8 @@ node test/plugin-apply.test.mjs    # 宿主半注册与注入（16 项断言）
 
 | 安装方式 | 锚点 | 可复现 |
 | --- | --- | --- |
-| `git+…git#v0.2.6` | git tag | ✅ 拿到的一定是该 tag 的代码 |
-| `file:…dsh-startup-cyrene-0.2.6.tgz` | 文件内容（可用 SHA256 校验） | ✅ |
+| `git+…git#v0.2.7` | git tag | ✅ 拿到的一定是该 tag 的代码 |
+| `file:…dsh-startup-cyrene-0.2.7.tgz` | 文件内容（可用 SHA256 校验） | ✅ |
 | `git+…git`（无 `#`） | 仓库 HEAD，浮动 | ❌ 不同时间装到不同内容 |
 | 本地目录 | 你的工作区 | ❌ |
 
@@ -155,7 +170,7 @@ node test/plugin-apply.test.mjs    # 宿主半注册与注入（16 项断言）
 | `origin`（主） | `https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene` | 国内访问快，默认推送目标 |
 | `github`（镜像） | `https://github.com/fischl-y/dsh-startup-cyrene` | 需要能访问 GitHub |
 
-两边内容保持一致（同一批 commit、同一个 `v0.2.6` tag）。维护者同步一次的命令：
+两边内容保持一致（同一批 commit、同一个 `v0.2.7` tag）。维护者同步一次的命令：
 
 ```bash
 git push origin main --follow-tags

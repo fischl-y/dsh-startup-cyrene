@@ -1,9 +1,9 @@
 {
   "name": "dsh-startup-cyrene",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": false,
   "type": "module",
-  "description": "Cyrene-style startup splash for DeepSeek Harness: plays a configurable list of local video segments at boot, lets a click jump ahead, then fades into the workbench. Ships with the two-segment Cyrene opening (loading.mp4 + 222_1.mp4).",
+  "description": "Cyrene-style startup splash for DeepSeek Harness: plays a configurable list of local video segments at boot, lets a click jump ahead, then fades into the workbench. User media live in ~/.dsh/startup-cyrene-media so plugin updates never overwrite them.",
   "keywords": [
     "deepseek-harness",
     "dsh",
@@ -25,13 +25,14 @@
     "client.js",
     "assets",
     "cordis.patch.yml",
+    "set-videos.ps1",
     "README.md",
     "README.zh-CN.md",
     "PROVENANCE.md",
     "LICENSE"
   ],
   "scripts": {
-    "test": "node test/splash-script.test.mjs && node test/plugin-apply.test.mjs"
+    "test": "node test/splash-script.test.mjs && node test/plugin-apply.test.mjs && node test/config.test.mjs"
   },
   "dsh": {
     "bundle": {

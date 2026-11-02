@@ -1,8 +1,19 @@
 # 变更记录
 
-> 当前可安装包在 `release/`：`dsh-startup-cyrene-0.2.6.tgz`（开屏插件）与
+> 当前可安装包在 `release/`：`dsh-startup-cyrene-0.2.7.tgz`（开屏插件）与
 > `dsh-cyrene-whale-widget-noanim-2.0.0+cyrene.1.tgz`（配合用的挂件整包）。
 > 已弃用版本的源码不再随仓库保留，原因与结论都记在下面，需要复现可照条目重写。
+
+## 0.2.7 —— 换素材不再碰 node_modules
+
+- 新增用户素材目录 `~/.dsh/startup-cyrene-media/`：插件查找顺序变成「用户目录 → 包内 assets」，
+  所以**更新/重装插件不会再覆盖用户自己的视频**。
+- 新增 `set-videos.ps1`：一条命令换两段视频（复制到素材目录 + 改写配置的 `segments`，其它字段保留），
+  支持 `-DryRun`。
+- `lib/config.js` 新增 `resolveMedia()` / `userMediaDir()`，`normalizeConfig()` 支持多目录查找；
+  路径穿越与非白名单扩展名依旧拒绝。
+- 新增 `test/config.test.mjs`（10 项断言：目录优先级、默认回退、非法名过滤、空素材禁用）。
+- 文档（中英 README、安装说明）改写「换成自己的视频」一节；示例与默认 `-Ref` 升级到 `v0.2.7`。
 
 ## 镜像（文档）
 

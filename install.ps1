@@ -14,7 +14,7 @@
 # 参数：
 #   -Tgz <path>    指定插件包；缺省时在脚本同级目录找 dsh-startup-cyrene-*.tgz
 #   -Git           强制从 Git 仓库安装（跳过本地 tgz）
-#   -Ref <ref>     从仓库安装时使用的版本锚点，默认 v0.2.6（tag）；传 main 表示跟随最新
+#   -Ref <ref>     从仓库安装时使用的版本锚点，默认 v0.2.7（tag）；传 main 表示跟随最新
 #   -Uninstall     卸载，不安装
 #   -Profile <名>  目标 profile，默认 desktop
 #   -Force         客户端在运行也继续（不推荐）
@@ -24,7 +24,7 @@
 param(
     [string]$Tgz = '',
     [switch]$Git,
-    [string]$Ref = 'v0.2.6',
+    [string]$Ref = 'v0.2.7',
     [switch]$Uninstall,
     [string]$Profile = 'desktop',
     [switch]$Force,

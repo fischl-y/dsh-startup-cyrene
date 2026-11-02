@@ -27,19 +27,19 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
 `-DryRun` prints without executing; `-Uninstall` removes the plugin; `-Ref main` follows the newest commit
-(the default is pinned to `v0.2.6`).
+(the default is pinned to `v0.2.7`).
 
 **Option 2 — install from the repository (pinned to a tag)**
 
 ```powershell
 # primary (Gitee, fastest from mainland China)
-dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.6"
+dsh plugin --profile desktop add "git+https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene.git#v0.2.7"
 
 # mirror (GitHub, when GitHub is reachable)
-dsh plugin --profile desktop add "git+https://github.com/fischl-y/dsh-startup-cyrene.git#v0.2.6"
+dsh plugin --profile desktop add "git+https://github.com/fischl-y/dsh-startup-cyrene.git#v0.2.7"
 ```
 
-`#v0.2.6` is the **version anchor**: you get exactly the code tagged `v0.2.6`, and later commits cannot
+`#v0.2.7` is the **version anchor**: you get exactly the code tagged `v0.2.7`, and later commits cannot
 silently change it. Upgrade by switching the tag (e.g. `#v0.2.7`); drop the `#…` part to track `main`
 (not recommended for sharing).
 
@@ -47,7 +47,7 @@ silently change it. Upgrade by switching the tag (e.g. `#v0.2.7`); drop the `#�
 
 ```powershell
 # the tarball lives in release/
-dsh plugin --profile desktop add "file:D:\path\to\dsh-startup-cyrene-0.2.6.tgz"
+dsh plugin --profile desktop add "file:D:\path\to\dsh-startup-cyrene-0.2.7.tgz"
 ```
 
 **Restart the client afterwards — that is all; no further command is needed.**
@@ -55,7 +55,7 @@ dsh plugin --profile desktop add "file:D:\path\to\dsh-startup-cyrene-0.2.6.tgz"
 Optional integrity check:
 
 ```powershell
-Get-FileHash .\release\dsh-startup-cyrene-0.2.6.tgz -Algorithm SHA256
+Get-FileHash .\release\dsh-startup-cyrene-0.2.7.tgz -Algorithm SHA256
 ```
 
 (To remove later: quit the client, then `dsh plugin --profile desktop remove dsh-startup-cyrene`.)
@@ -93,14 +93,30 @@ No configuration is required. To tune the splash, write `%USERPROFILE%\.dsh\star
 Invalid values fall back to defaults with a console warning — the splash never blocks the UI.
 `DSH_STARTUP_CYRENE_CONFIG` can point at an alternative JSON file.
 
-### Use your own video
+### Use your own video (script recommended)
+
+Put your clips in **`%USERPROFILE%\.dsh\startup-cyrene-media\`** — the plugin looks there first and only
+falls back to the packaged `assets/`, so plugin updates never overwrite your media.
 
 ```powershell
-# overwrite in place, keeping the same file name
-copy your-opening.mp4 "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-startup-cyrene\assets\clip1.mp4"
+# replace only the first clip (keep the second one)
+powershell -ExecutionPolicy Bypass -File .\set-videos.ps1 -Clip1 .\my-opening.mp4
+
+# replace both
+powershell -ExecutionPolicy Bypass -File .\set-videos.ps1 -Clip1 .\my-opening.mp4 -Clip2 .\my-second.mp4
 ```
 
-Or point `segments[].file` at another file inside `assets/`. H.264 + AAC mp4 is the safest choice.
+The script copies the files, rewrites `segments` in `~/.dsh/startup-cyrene.json` (other settings preserved),
+and you just restart the client. `-DryRun` prints without touching anything.
+
+Manual equivalent — drop the files into `startup-cyrene-media` and point the config at them:
+
+```json
+{ "segments": [ { "file": "my-opening.mp4" }, { "file": "my-second.mp4" } ] }
+```
+
+H.264 + AAC mp4 is the safest choice. To go back to the bundled clips, delete the config file and the
+`startup-cyrene-media` directory.
 
 ## Interaction with other plugins
 
@@ -149,8 +165,8 @@ Every release gets a `vX.Y.Z` tag, kept in sync with `package.json`'s `version`.
 
 | Install method | Anchor | Reproducible |
 | --- | --- | --- |
-| `git+…git#v0.2.6` | git tag | ✅ always the tagged code |
-| `file:…dsh-startup-cyrene-0.2.6.tgz` | file contents (verify with SHA256) | ✅ |
+| `git+…git#v0.2.7` | git tag | ✅ always the tagged code |
+| `file:…dsh-startup-cyrene-0.2.7.tgz` | file contents (verify with SHA256) | ✅ |
 | `git+…git` (no `#`) | repository HEAD, floating | ❌ different bytes at different times |
 | local directory | your working tree | ❌ |
 
@@ -164,7 +180,7 @@ To upgrade, swap the tag in the command (e.g. `#v0.2.7`) and `add` again; downgr
 | `origin` (primary) | `https://gitee.com/qyb7316/deepseek-the-rise-of-cyrene` | fast from mainland China; default push target |
 | `github` (mirror) | `https://github.com/fischl-y/dsh-startup-cyrene` | requires GitHub reachability |
 
-Both carry the same commits and the same `v0.2.6` tag. Maintainer sync:
+Both carry the same commits and the same `v0.2.7` tag. Maintainer sync:
 
 ```bash
 git push origin main --follow-tags
