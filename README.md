@@ -1,5 +1,7 @@
 # dsh-startup-cyrene
 
+[中文](README.zh-CN.md) · **English**
+
 A configurable **startup splash** for [DeepSeek Harness](https://github.com/deepseek-ai): at boot it plays one or
 more local video segments full-screen, then fades into the workbench. Two Cyrene opening clips ship with it
 (13.9 s + ~3 s).

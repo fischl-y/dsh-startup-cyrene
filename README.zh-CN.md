@@ -1,5 +1,7 @@
 # dsh-startup-cyrene
 
+**中文** · [English](README.md)
+
 给 **DeepSeek Harness** 加一段可配置的启动开屏：启动时全屏播放本地视频片段，播完淡出进工作台。
 默认自带两段昔涟开场（13.9 s + 约 3 s）。
 
